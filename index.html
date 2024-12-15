@@ -16,11 +16,80 @@
 
     <canvas id="canvas"></canvas>
     <script>
-        const canvas = document.getElementById("canvas");
-        const ctx = canvas.getContext("2d");
+     
+        "use strict";
+    let canvas;
+    let context;
+    let width = 320;
+    let control = "";
+    window.onload = init;
+
+    class Controller{
+        constructor(speed, counter){
+            this.speed = speed;
+            this.ground = [];
+            this.counter = counter;
+            this.makeGround();
+        }
+
+        makeGround(){
+            for (let i=0; i<32; i++){
+                this.ground.push({x: i * 32, y:Math.round(Math.random() * width)});
+                console.log(`x: ${this.ground[i].x}, y: ${this.ground[i].y}`);
+            }
+            
+        }
+
+        drawGround(){
+            //
+            context.fillStyle = "black";
+            this.ground.map((i) => {
+                context.fillRect(i.x + width - this.counter, i.y, 3 , 2);  
+            })
+            this.ground.map((i) => {
+                context.fillRect(i.x + (width * 2) - this.counter, i.y, 3 , 2);  
+            })
+        }
+
+        step(){
+            if (this.counter + this.speed >= width * 2){
+                this.counter = this.counter + this.speed - (width * 2);
+            } else this.counter ++;
+            this.drawGround();
+            //console.log(this.counter);
+        }
+        
+        
+    }
+
+
+    function init(){
+        canvas = document.getElementById('canvas');
+        context = canvas.getContext('2d');
 
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
+
+        //new ground controller
+        control = new Controller(4, 0);
+        // Start the first frame request
+        window.requestAnimationFrame(gameLoop);
+    }
+
+    function gameLoop(timeStamp){
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        control.step();
+        //draw();
+
+        // Keep requesting new frames
+        window.requestAnimationFrame(gameLoop);
+    }
+
+    function draw(){
+        let randomColor = Math.random() > 0.5? '#ff8080' : '#0099b0';
+        context.fillStyle = randomColor;
+        context.fillRect(100, 50, 200, 175);
+    }
     </script>
     
 </body>
